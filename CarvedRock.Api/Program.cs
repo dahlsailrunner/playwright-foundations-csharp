@@ -5,9 +5,6 @@ using CarvedRock.Api;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using Serilog;
-using Serilog.Enrichers.Span;
-using Serilog.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -16,22 +13,11 @@ using FluentValidation;
 using CarvedRock.Core;
 using Microsoft.AspNetCore.Authentication;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddHealthChecks()
-    .AddDbContextCheck<LocalContext>();
 
-builder.Logging.ClearProviders();
-
-builder.Host.UseSerilog((context, loggerConfig) => {
-    loggerConfig
-    .ReadFrom.Configuration(context.Configuration)
-    //.WriteTo.Console()
-    .Enrich.WithExceptionDetails()
-    .Enrich.FromLogContext()
-    .Enrich.With<ActivityEnricher>()
-    .WriteTo.Seq("http://localhost:5341");
-});
+builder.AddServiceDefaults();
 
 builder.Services.AddProblemDetails(opts => // built-in problem details support
     opts.CustomizeProblemDetails = (ctx) =>
@@ -69,24 +55,11 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IProductLogic, ProductLogic>();
 
-// SQLite --------------------------------
-var filename = Path.Join(
-           Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-           builder.Configuration.GetConnectionString("CarvedRock"));
-
-builder.Services.AddDbContext<LocalContext>(options => options
-        .UseSqlite($"Data Source={filename}")
-        .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
-
-// Postgres -----------------------------
-//builder.Services.AddDbContext<LocalContext>(options => options
-//    .UseNpgsql(builder.Configuration.GetConnectionString("CarvedRockPostgres"))
-//    .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
-
-// SQL Server ---------------------------
-//builder.Services.AddDbContext<LocalContext>(options => options
-//    .UseSqlServer(builder.Configuration.GetConnectionString("CarvedRockSqlServer"))
-//    .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+builder.AddNpgsqlDbContext<LocalContext>("CarvedRockPostgres", configureDbContextOptions: opts =>
+{
+    opts.ConfigureWarnings(warnings => warnings.Log(RelationalEventId.PendingModelChangesWarning));
+    opts.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+});
 
 builder.Services.AddScoped<ICarvedRockRepository, CarvedRockRepository>();
 
@@ -94,27 +67,17 @@ builder.Services.AddAutoMapper(typeof(ProductMappingProfile));
 builder.Services.AddValidatorsFromAssemblyContaining<NewProductValidator>();
 
 var app = builder.Build();
-app.UseSerilogRequestLogging(options =>
-{
-    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
-    {
-        diagnosticContext.Set("client_id", httpContext.User.Claims.FirstOrDefault(c => c.Type == "client_id")?.Value);
-    };
-});
 
+app.MapDefaultEndpoints();
 app.UseExceptionHandler();  
 
 if (app.Environment.IsDevelopment())
 {
     SetupDevelopment(app);
 }
-
-app.MapFallback(() => Results.Redirect("/swagger"));
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers().RequireAuthorization();
-
-app.MapHealthChecks("health").AllowAnonymous();
 
 app.Run();
 

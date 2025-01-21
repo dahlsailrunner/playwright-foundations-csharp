@@ -1,25 +1,13 @@
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
-using Serilog;
-using Serilog.Exceptions;
-using Serilog.Enrichers.Span;
 using Microsoft.AspNetCore.Authentication;
 using CarvedRock.Core;
 using CarvedRock.WebApp;
 using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Logging.ClearProviders();
 
-builder.Host.UseSerilog((context, loggerConfig) => {
-    loggerConfig
-    .ReadFrom.Configuration(context.Configuration)
-    .WriteTo.Console()
-    .Enrich.WithExceptionDetails()
-    .Enrich.FromLogContext()
-    .Enrich.With<ActivityEnricher>()
-    .WriteTo.Seq("http://localhost:5341");
-});
+builder.AddServiceDefaults();
 
 JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 builder.Services.AddAuthentication(options =>
@@ -49,7 +37,6 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddScoped<IClaimsTransformation, CarvedRockTransformer>();
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddHealthChecks();
 
 builder.Services.AddRazorPages();
 builder.Services.AddHttpClient();
@@ -58,6 +45,7 @@ builder.Services.AddScoped<IEmailSender, EmailService>();
 
 var app = builder.Build();
 
+app.MapDefaultEndpoints();
 app.UseExceptionHandler("/Error");
 
 app.UseStaticFiles();
@@ -67,7 +55,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages().RequireAuthorization();
-app.MapHealthChecks("health").AllowAnonymous();
 
 app.Run();
 

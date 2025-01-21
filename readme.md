@@ -1,35 +1,22 @@
-![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/knowyourtoolset/automation-testing-strategies/21) ![Azure DevOps tests](https://img.shields.io/azure-devops/tests/knowyourtoolset/automation-testing-strategies/21)
-
-
-# Automated Testing Strategies for ASP.NET Core
+# Playwright Foundations in C# / .NET
 
 ## Getting Started
 
-You should set both the `Api` and the `WebApp` projects as startup projects. In Visual
-Studio this can be done by "Configure Startup Projects", then choosing "Multiple startup projects",
-and finally choosing the `Launch-UI-and-API` profile.
+This is an Aspire-based solution, so you should be able to run it
+as long as you have [the Aspire prerequisites](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/setup-tooling?tabs=windows&pivots=visual-studio#install-net-aspire)
+installed.
 
-The solution uses two services that it expects to be running locally. The simplest way to
-run these services is to use Docker.  The following commands will start the services.
+If you're running the solution for the first time, there may be some
+extra startup time pulling the container images being used:
 
-```bash
-docker pull rnwood/smtp4dev
-docker run --rm -d --name fakemail -p 3000:80 -p 2525:25 rnwood/smtp4dev
-
-docker pull datalust/seq
-docker run --name seq -d --restart unless-stopped -e ACCEPT_EULA=Y -p 5341:80 datalust/seq
-```
-
-Even without them running you should be able to run the solution.
-
-To see logs, you can navigate to [http://localhost:5341](http://localhost:5341).
-
-To see emails, you can navigate to [http://localhost:3000](http://localhost:3000).
+- `postgres` (the database)
+- `smtp4dev` (a fake / dev email server with a UI)
 
 ## Features
 
 This is a simple e-commerce application that has a few features
-that we want to explore automated testing strategies for.
+that we want to explore automated end-to-end testing strategies for
+with Playwright.
 
 Here are the features:
 
@@ -50,12 +37,12 @@ Here are the features:
   - Can submit an order or cancel the order and clear the cart
   - A submitted order will send a fake email
 
-"Catch" with a refactoring change:
+If you want to "catch" a breaking change with a refactor:
 
 - change the "admin" role to be "administrator" and see what breaks
 (maybe make it a different claim type than role and change to a "policy"??)
 
-For the learner:
+Ideas, if you want to add more features to test:
 
 - Add edit and (soft) delete to the API and WebApp, then write tests
 - More complex "cart edit" functionality
@@ -63,15 +50,13 @@ For the learner:
 
 ## VS Code Setup
 
-RUnning in VS Code is a totally legitimate use-case for this solution and
-repo.
-
-The same instructions above (Getting Started) apply here, but the following
-extension should probably be installed (it includes some other extensions):
+The same instructions as above (Getting Started) apply here,
+but the following extension should be installed
+(it includes some other extensions):
 
 - [C# Dev Kit](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit)
 
-Then run the API project and the UI project.
+Then just hit `F5`.
 
 ## Data and EF Core Migrations
 
@@ -81,102 +66,17 @@ The `dotnet ef` tool is used to manage EF Core migrations.  The following comman
 dotnet ef migrations add Initial -s ../CarvedRock.Api
 ```
 
-The initial setup for the application uses SQLite.
-The data will be stored in a file called `carvedrock-sample.sqlite` as
-defined in the API project's `appsettings.json` file.
+The database used by the application is Postgres.
 
-The location of the file is in the "local AppData" folder (`Environment.SpecialFolder.LocalApplicationData`):
-
-- Windows: `C:\Users\<username>\AppData\Local\`
-- Mac: `/Users/USERNAME/.local/share`
-
-To browse / query the data, you can use some handy extensions:
-
-- In Visual Studio, use the [SQLite and SQL Server Compact Toolbox](https://marketplace.visualstudio.com/items?itemName=ErikEJ.SQLServerCompactSQLiteToolbox) extension
-- In VS Code, use the [SQLite Viewer](https://marketplace.visualstudio.com/items?itemName=qwtel.sqlite-viewer) extension
-
-### Switching Databases
-
-Switching between SQLite and Postgres and SQL Server is a matter
-of commenting out the unused dbcontext setup / initialization logic and
-commenting in what you want:
-
-- `Program.cs` of the API project
-- `CustomApiFactory.cs` of the InnerLoopTests project
-- `SharedFixture.cs` of the InnerLoopTests project
-
-You also need to manually delete the `CarvedRock.Data.Migrations`
-folder and recreate the migrations using the instructions above.
-
-Running Postgres for local development:
-
-```bash
-docker pull postgres
-docker run -d --name carvedrock-postgres -e POSTGRES_PASSWORD=carvedrock -p 5432:5432 postgres
-```
-
-Running SQL Server for local development:
-
-```bash
-docker pull mcr.microsoft.com/mssql/server
-docker run -d --name carvedrock-sqlserver -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Carvedr0ck!" -p 1433:1433 mcr.microsoft.com/mssql/server
-```
+To browse / query the data, you can comment in the `.WithPgAmin()` line in the `AppHost`:
 
 ## Verifiying Emails
 
 The very simple email functionality is done using a template
 from [this GitHub repo](https://github.com/leemunroe/responsive-html-email-template)
 and the [smtp4dev](https://github.com/rnwood/smtp4dev)
-service that can easily run in a Docker container.
+service that we're running in Aspire using its container image.
 
-There is a UI that you can naviagte to in your browser for
-seeing the emails that works great.  If you use the `docker run` command
-that I have listed above, the UI is at
-[http://localhost:3000](http://localhost:3000).
-
-There is also an API that is part of that service and a couple of quick
-API calls call give you the content of the email body that you
-want to verify:
-
-```bash
-GET http://localhost:3000/api/messages
-
-### find the ID of the message you care about
-
-GET http://localhost:3000/api/messages/<message-guid>/html
-```
-
-## Test Coverage 
-
-To see test coverage for the inner loop tests you've written,
-you can use the default [**coverlet**](https://github.com/coverlet-coverage/coverlet) tool that is included with
-the `XUnit` test project template.
-
-```bash
-dotnet test --collect:"XPlat Code Coverage"
-```
-
-Then use the [**reportgenerator**](https://github.com/danielpalme/ReportGenerator) global tool to generate an HTML report.  To install the tool
-(you only need to do this once):
-
-```bash
-dotnet tool install --global dotnet-reportgenerator-globaltool
-```
-
-Then run the following command to generate the report:
-
-```bash
-reportgenerator -reports:".\Tests\**\TestResults\**\coverage.cobertura.xml" -targetdir:"coverage" -reporttypes:Html
-```
-To remove any contents from previous runs, use the
-following PowerShell command:
-
-```bash
-gci -include TestResults,coverage -recurse | remove-item -force -recurse
-```
-
-##  AngleSharp and UI Selectors
-
-- [AngleSharp](https://anglesharp.github.io/)
-- [Selectors Reference](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_selectors)
-
+Click the link in the Aspire Dashboard for the smtpserver and you can
+see any emails that have been sent by the application (they don't go
+anywhere other than this UI).

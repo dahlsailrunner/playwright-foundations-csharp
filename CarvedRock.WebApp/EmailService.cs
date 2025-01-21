@@ -8,8 +8,13 @@ public class EmailService : IEmailSender
     private readonly SmtpClient _client;
     public EmailService(IConfiguration config)
     {
-        var port = config.GetValue<int>("CarvedRock:EmailPort");
-        var host = config.GetValue<string>("CarvedRock:EmailHost")!;
+        var smtpServer = config.GetValue<string>("CarvedRock:SmtpServer")!;
+        if (smtpServer.StartsWith("tcp://"))
+            smtpServer = smtpServer[6..];
+
+        var parsedServer = smtpServer.Split(':');
+        var host = parsedServer[0];
+        var port = int.Parse(parsedServer[1]);
         _client = new() { Port = port, Host = host };
     }
 
