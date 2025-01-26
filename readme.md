@@ -1,5 +1,14 @@
 # Playwright Foundations in C# / .NET
 
+## Where are the Playwright tests?
+
+The root of this repo is the application to test (see [Getting Started](#getting-started) below).
+Since Playwright tests are end-to-end, they are
+generally not in the same solution as the system under test (SUT).
+
+The Playwright tests for this application are in the [e2e](e2e/readme) folder and the
+readme in that folder has lots of notes about the tests.
+
 ## Getting Started
 
 This is an Aspire-based solution, so you should be able to run it
