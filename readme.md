@@ -12,6 +12,9 @@ extra startup time pulling the container images being used:
 - `postgres` (the database)
 - `smtp4dev` (a fake / dev email server with a UI)
 
+To make sure you can do everything with Playwright, check [its
+setup requirements](https://playwright.dev/dotnet/docs/intro).
+
 ## Features
 
 This is a simple e-commerce application that has a few features
