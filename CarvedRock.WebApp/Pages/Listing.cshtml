@@ -31,10 +31,20 @@
     }
     function setCookie(cname, cvalue) {
         document.cookie = cname + "=" + cvalue + ";path=/;SameSite=Lax";
-    }   
+    }  
+    // $(document).ready(function () {
+    //     var delay = 7000;
+    //     setTimeout(function () {
+    //         $("#content-with-delay").html("This content was delayed by " + delay + " milliseconds");
+    //     }, delay);
+    // });
 </script>
 
 <h1>@Model.CategoryName</h1>
+
+@* <div>Delayed content
+    <div id="content-with-delay"></div>
+</div> *@
 
 <table class="table">
     <thead>
