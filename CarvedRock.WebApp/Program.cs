@@ -12,7 +12,7 @@ builder.AddServiceDefaults();
 JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultScheme = "Cookies";
+    options.DefaultScheme = "Cookies";    
     options.DefaultChallengeScheme = "oidc";      
 })
 .AddCookie("Cookies", options => options.AccessDeniedPath = "/AccessDenied")

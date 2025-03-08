@@ -32,19 +32,34 @@
     function setCookie(cname, cvalue) {
         document.cookie = cname + "=" + cvalue + ";path=/;SameSite=Lax";
     }  
-    // $(document).ready(function () {
-    //     var delay = 7000;
-    //     setTimeout(function () {
-    //         $("#content-with-delay").html("This content was delayed by " + delay + " milliseconds");
-    //     }, delay);
-    // });
+
+    async function fetchProductsByCategory() {
+        try {
+            const response = await fetch('https://localhost:7213/Product?category=boots');
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            const data = await response.json();
+            console.log(data); // You can process the data as needed
+        } catch (error) {
+            console.error('There has been a problem with your fetch operation:', error);
+        }
+    }
+
+    $(document).ready(function () {
+        var delay = 2000;
+        setTimeout(function () {
+            $("#content-with-delay").html("This content was delayed by " + delay + " milliseconds");
+        }, delay);
+        fetchProductsByCategory();
+    });
 </script>
 
 <h1>@Model.CategoryName</h1>
 
-@* <div>Delayed content
+<div>Delayed content
     <div id="content-with-delay"></div>
-</div> *@
+</div>
 
 <table class="table">
     <thead>

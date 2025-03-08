@@ -47,7 +47,13 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 builder.Services.AddScoped<IClaimsTransformation, CarvedRockTransformer>();
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder.WithOrigins("https://localhost:7224")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod());
+});
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, SwaggerOptions>();
@@ -67,6 +73,7 @@ builder.Services.AddAutoMapper(typeof(ProductMappingProfile));
 builder.Services.AddValidatorsFromAssemblyContaining<NewProductValidator>();
 
 var app = builder.Build();
+app.UseCors("AllowSpecificOrigin");
 
 app.MapDefaultEndpoints();
 app.UseExceptionHandler();  
