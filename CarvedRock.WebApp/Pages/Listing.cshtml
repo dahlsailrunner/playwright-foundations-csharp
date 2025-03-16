@@ -71,7 +71,7 @@
     </thead>
     <tbody>
     @foreach (var product in Model.Products) {
-        <tr>
+        <tr data-testid="@product.Name">
             <td>
                 <img src="@product.ImgUrl" alt="@product.Name" height="100" width="100"/>
                 <br/>

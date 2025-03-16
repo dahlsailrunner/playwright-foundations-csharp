@@ -73,7 +73,8 @@ public class Tests : PageTest
 
         await Page.Locator("#add-btn-3").ClickAsync();
         await Page.GetByRole(AriaRole.Link, new() { Name = "Kayaks" }).ClickAsync();
-        await Page.GetByRole(AriaRole.Button, new() { Name = "Add to Cart" }).ClickAsync();
+        await Page.GetByTestId("Glide").GetByRole(AriaRole.Button, new() { Name = "Add to Cart" }).ClickAsync();
+
         await Page.GetByRole(AriaRole.Link, new() { NameString = "Cart" }).ClickAsync();
         //await Page.GetByPlaceholder("Username").FillAsync("bob");
         //await Page.GetByPlaceholder("Username").PressAsync("Tab");

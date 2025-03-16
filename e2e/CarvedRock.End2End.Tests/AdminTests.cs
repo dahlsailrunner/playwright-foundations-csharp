@@ -124,6 +124,9 @@ public class AdminTests : PageTest
         await Expect(_page.Locator("tbody")).ToContainTextAsync(productToCreate.Description);
         await Expect(_page.Locator("tbody")).ToContainTextAsync(productToCreate.Category);
         await Expect(_page.Locator("tbody")).ToContainTextAsync($"{productToCreate.Price}");
+
+        TestContext.Out.WriteLine($"Created new product {productToCreate.Name} of type {productToCreate.Category}.");
+
         //BETTER: 
         //await Expect(Page.Locator("tbody")).ToContainTextAsync($"{productToCreate.Price:F2}");
 
