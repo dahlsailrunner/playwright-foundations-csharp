@@ -6,6 +6,12 @@ namespace CarvedRock.End2End.Tests;
 [TestFixture]
 public class Tests : PageTest
 {
+    [OneTimeSetUp]
+    public void OneTimeSetUp()
+    {
+        var baseUrl = TestContext.Parameters.Get("BaseUrl", "https://localhost:7224");
+    }
+
     [Test]
     public async Task HomePageHasCorrectContent()
     {

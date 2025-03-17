@@ -136,8 +136,7 @@ public class AdminTests : PageTest
     [Test]
     public async Task CanDeleteProduct()
     {
-        //await LoginAsAnAdmin();
-
+        await LoginAsAnAdmin();
         await _page.GotoAsync("https://localhost:7224/admin");
         //await Page.GetByPlaceholder("Username").FillAsync("bob");
         //await Page.GetByPlaceholder("Username").PressAsync("Tab");

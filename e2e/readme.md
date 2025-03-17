@@ -49,3 +49,23 @@ ways to help troubleshoot tests and examples of each are included.
 * Complete "manual setup" is possible - see `ApiMockTestWithVideo.cs`.
 * Parallelism happens across test classes, but within a class each test is run one at a time.
 * Custom timeouts can be applied when using locators -- see `FirstTests.cs`->`DelayedContentShowsUp()`.
+
+## Running Tests
+
+### Use Your IDE
+
+You can run the tests using your IDE's test runner.  This will work in Visual Studio, Rider, or VS Code 
+with the [C# DevKit extension](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit) installed.
+
+### Use the Command Line
+
+You can run the tests using the .NET CLI.  This will work in any terminal with the .NET SDK installed.
+
+```bash
+dotnet test
+```
+To target a specific browser, use `chromium`, `firefox`, or `webkit` as an argument to dotnet test as shown below:
+
+```bash
+dotnet test -- Playwright:browser=chromium
+```

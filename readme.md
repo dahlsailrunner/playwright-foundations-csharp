@@ -38,8 +38,8 @@ Here are the features:
   - Validation will be done with [FluentValidation](https://docs.fluentvalidation.net/en/latest/index.html) and errors returned as a `400 Bad Request` with `ProblemDetails`
   - A `GET` with a category of something other than "all", "boots", "equip", or "kayak" will return a `500 internal server error` with `ProblemDetails`
   - Data is refreshed to a known state as the app starts
-- Authentication provided by OIDC via the [demo Duende Identity Server](https://demo.duendesoftware.com)
-- A custom claims transformer will add the `admin` role to "Bob Smith" and any authentication via Google
+  - Authentication provided by OIDC via the [demo Duende Identity Server](https://demo.duendesoftware.com)
+  - A custom claims transformer will add the `admin` role to "Bob Smith" and any authentication via Google
 - **WebApp**
   - The home page and listing pages will show a subset of products
   - There is a page at `/Admin` that will show a list of products that can be edited or added to
@@ -48,17 +48,6 @@ Here are the features:
   - Can add items to cart and see a summary of the cart (shows when empty too)
   - Can submit an order or cancel the order and clear the cart
   - A submitted order will send a fake email
-
-If you want to "catch" a breaking change with a refactor:
-
-- change the "admin" role to be "administrator" and see what breaks
-(maybe make it a different claim type than role and change to a "policy"??)
-
-Ideas, if you want to add more features to test:
-
-- Add edit and (soft) delete to the API and WebApp, then write tests
-- More complex "cart edit" functionality
-- Be able to apply a "promotion" on the Cart page
 
 ## VS Code Setup
 
@@ -70,6 +59,45 @@ but the following extension should be installed
 
 Then just hit `F5`.
 
+## Deploying to Azure to Run Tests 
+
+This application can be deployed easily to Azure Container Apps to
+run Playwright tests against it.  The following steps are needed to
+deploy the application to Azure - this assumes you have the
+[Azure CLI (`azd`)](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) installed, and an active subscription in Azure.
+
+Run these commands from the root directory of the repo / solution.
+
+```bash
+azd init
+azd up
+```
+
+The above commands will ask you some questions that should be pretty
+easy to answer (use aspire, which subscription, etc).  For more details
+on deploying Aspire apps to Azure, see either [the documentation](https://learn.microsoft.com/en-us/dotnet/aspire/deployment/azure/aca-deployment) or
+my Pluralsight course 
+[.NET Cloud-native Development: Aspire Build and Deployment Options](https://app.pluralsight.com/library/courses/cloud-native-development-dot-net-deployment-options/table-of-contents).
+
+If you have updates you make to the application and then want to deploy
+them after already having done `azd up`, you can use the following command to update the deployment:
+
+```bash
+azd deploy
+```
+
+For details on running the Playwright tests against the deployed
+application, see the [readme in the e2e folder](e2e/readme.md).
+
+### Removing the Azure Deployment
+
+Once you are done with your experiments and testing, remove the Azure resources with
+the following command:
+
+```bash
+azd down
+```
+
 ## Data and EF Core Migrations
 
 The `dotnet ef` tool is used to manage EF Core migrations.  The following command is used to create migrations (from the `CarvedRock.Data` folder).
@@ -77,10 +105,6 @@ The `dotnet ef` tool is used to manage EF Core migrations.  The following comman
 ```bash
 dotnet ef migrations add Initial -s ../CarvedRock.Api
 ```
-
-The database used by the application is Postgres.
-
-To browse / query the data, you can comment in the `.WithPgAmin()` line in the `AppHost`:
 
 ## Verifiying Emails
 

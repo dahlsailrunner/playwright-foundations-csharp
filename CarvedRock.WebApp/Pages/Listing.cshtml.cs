@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace CarvedRock.WebApp.Pages;
 
-public partial class ListingModel(IProductService productService) : PageModel
+public partial class ListingModel(IProductService productService, IConfiguration config) : PageModel
 {
+    public string ApiBaseUrl => config.GetValue<string>("CarvedRock:ApiBaseUrl")!;
     public List<ProductModel> Products { get; set; } = [];
     public string CategoryName { get; set; } = "";        
 
