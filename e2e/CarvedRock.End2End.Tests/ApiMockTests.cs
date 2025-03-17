@@ -6,9 +6,12 @@ namespace CarvedRock.End2End.Tests;
 [TestFixture]
 public class ApiMockTests : PageTest
 {
+    private string _baseUrl = null!;
+
     [SetUp]
     public async Task SetupTracing()
-    {               
+    {
+        _baseUrl = Utilities.GetBaseUrl();
         await Context.Tracing.StartAsync(new()
         {
             Title = "ApiMockTraces",
@@ -21,7 +24,7 @@ public class ApiMockTests : PageTest
     [Test]
     public async Task MockedItemsOnFootwearPage()
     {
-        await Page.GotoAsync("https://localhost:7224");
+        await Page.GotoAsync(_baseUrl);
 
         await Page.RouteAsync("*/**/Product?category=boots", async route =>
         {

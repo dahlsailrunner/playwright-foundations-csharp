@@ -6,16 +6,24 @@ namespace CarvedRock.End2End.Tests;
 [TestFixture]
 public class Tests : PageTest
 {
+    internal string _baseUrl = null!;
+
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
-        var baseUrl = TestContext.Parameters.Get("BaseUrl", "https://localhost:7224");
+        _baseUrl = Utilities.GetBaseUrl();
+    }
+
+    [SetUp]
+    public void Setup()
+    {
+        TestContext.Out.WriteLine($"Using base URL: {_baseUrl}");
     }
 
     [Test]
     public async Task HomePageHasCorrectContent()
     {
-        await Page.GotoAsync("https://localhost:7224");
+        await Page.GotoAsync(_baseUrl);
         await Page.ScreenshotAsync(new() { Path = "screenshot.png" });
 
         // Expect a title "to contain" a substring.
@@ -58,7 +66,7 @@ public class Tests : PageTest
     [Test]
     public async Task CanAddItemsToCartOnFootwearPage()
     {
-        await Page.GotoAsync("https://localhost:7224");
+        await Page.GotoAsync(_baseUrl);
         await Page.GetByRole(AriaRole.Link, new() { Name = "Footwear" }).ClickAsync();
         await Expect(Page.GetByRole(AriaRole.Img, new() { Name = "Trailblazer" })).ToBeVisibleAsync();
 
@@ -72,7 +80,7 @@ public class Tests : PageTest
     [TestCaseSource(nameof(Users))]
     public async Task AddItemsToCartAndVerifyContents(User user)
     {
-        await Page.GotoAsync("https://localhost:7224/Listing?cat=boots");
+        await Page.GotoAsync($"{_baseUrl}/Listing?cat=boots");
         var btn2 = Page.Locator("#add-btn-2");
         await btn2.ClickAsync();
         await btn2.ClickAsync();
@@ -117,7 +125,7 @@ public class Tests : PageTest
     [Test]
     public async Task DelayedContentShowsUp()
     {
-        await Page.GotoAsync("https://localhost:7224/");
+        await Page.GotoAsync(_baseUrl);
         await Page.GetByRole(AriaRole.Link, new() { Name = "Footwear" }).ClickAsync();
         await Expect(Page.Locator("#content-with-delay"))
             .ToContainTextAsync("This content was delayed by 2000 milliseconds",

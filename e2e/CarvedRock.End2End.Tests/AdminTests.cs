@@ -9,6 +9,13 @@ public class AdminTests : PageTest
 {
     private const string _authenticationStateFilename = "authState.json";
     private IPage _page = null!;
+    private string _baseUrl = null!;
+
+    [OneTimeSetUp]
+    public void OneTimeSetUp()
+    {
+        _baseUrl = Utilities.GetBaseUrl();
+    }
 
     //[OneTimeSetup] // happens once before all tests in this class
     [SetUp] // happens before each test method in this class
@@ -37,7 +44,7 @@ public class AdminTests : PageTest
     public async Task AdminIsAvailableForBob()
     {
         //await LoginAsAnAdmin();
-        await _page.GotoAsync("https://localhost:7224/");
+        await _page.GotoAsync(_baseUrl);
         //await Page.GetByRole(AriaRole.Link, new() { Name = "Sign in" }).ClickAsync();
         //await Page.GetByPlaceholder("Username").FillAsync("bob");
         //await Page.GetByPlaceholder("Username").PressAsync("Tab");
@@ -54,7 +61,7 @@ public class AdminTests : PageTest
     public async Task ValidationErrorsAppearOnEmptySubmission()
     {
         //await LoginAsAnAdmin();
-        await _page.GotoAsync("https://localhost:7224/admin");
+        await _page.GotoAsync($"{_baseUrl}/admin");
         //await Page.GetByPlaceholder("Username").FillAsync("bob");
         //await Page.GetByPlaceholder("Username").PressAsync("Tab");
         //await Page.GetByPlaceholder("Password").FillAsync("bob");
@@ -76,7 +83,7 @@ public class AdminTests : PageTest
         // form interactions: https://playwright.dev/dotnet/docs/input
 
         //await LoginAsAnAdmin();
-        await _page.GotoAsync("https://localhost:7224/admin");
+        await _page.GotoAsync($"{_baseUrl}/admin");
         //await Page.GetByPlaceholder("Username").FillAsync("bob");
         //await Page.GetByPlaceholder("Username").PressAsync("Tab");
         //await Page.GetByPlaceholder("Password").FillAsync("bob");
@@ -137,7 +144,7 @@ public class AdminTests : PageTest
     public async Task CanDeleteProduct()
     {
         await LoginAsAnAdmin();
-        await _page.GotoAsync("https://localhost:7224/admin");
+        await _page.GotoAsync($"{_baseUrl}/admin");
         //await Page.GetByPlaceholder("Username").FillAsync("bob");
         //await Page.GetByPlaceholder("Username").PressAsync("Tab");
         //await Page.GetByPlaceholder("Password").FillAsync("bob");
@@ -168,7 +175,7 @@ public class AdminTests : PageTest
 
     private async Task LoginAsAnAdmin()
     {
-        await Page.GotoAsync("https://localhost:7224/");
+        await Page.GotoAsync(_baseUrl);
         await Page.GetByRole(AriaRole.Link, new() { Name = "Sign in" }).ClickAsync();
         await Page.GetByPlaceholder("Username").FillAsync("bob");
         await Page.GetByPlaceholder("Username").PressAsync("Tab");

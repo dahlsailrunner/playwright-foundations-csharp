@@ -17,7 +17,7 @@ public class ApiTests : PlaywrightTest
     {
         _request = await Playwright.APIRequest.NewContextAsync(new()
         {
-            BaseURL = "https://localhost:7213",
+            BaseURL = Utilities.GetApiUrl(),
             IgnoreHTTPSErrors = true // Ignore self-signed certificates (if localhost only?)
         });
         // add headers, get auth token, do OneTimeSetup, etc

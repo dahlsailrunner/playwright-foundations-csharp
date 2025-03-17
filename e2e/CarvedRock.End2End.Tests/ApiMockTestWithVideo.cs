@@ -6,16 +6,18 @@ namespace CarvedRock.End2End.Tests;
 [TestFixture]
 public class ApiMockTestWithVideo : PageTest
 {
+    private string _baseUrl = null!;
     private IPage _page = null!;
     private IBrowserContext _browserContext = null!;
 
     [OneTimeSetUp] 
     public async Task SetUp()
     {
+        _baseUrl = Utilities.GetBaseUrl();
         var playwright = await Microsoft.Playwright.Playwright.CreateAsync();
         var browser = await playwright.Chromium.LaunchAsync(); // or WebKit, Firefox
 
-        var _browserContext = await browser.NewContextAsync(new BrowserNewContextOptions
+        _browserContext = await browser.NewContextAsync(new BrowserNewContextOptions
         {
             RecordVideoDir = "videos/"
             });
@@ -33,7 +35,7 @@ public class ApiMockTestWithVideo : PageTest
     [Test]
     public async Task MockedItemsOnFootwearPage()
     {
-        await _page.GotoAsync("https://localhost:7224");
+        await _page.GotoAsync(_baseUrl);
 
         await _page.RouteAsync("*/**/Product?category=boots", async route =>
         {

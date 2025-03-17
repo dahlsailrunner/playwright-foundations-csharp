@@ -6,17 +6,25 @@ namespace CarvedRock.End2End.Tests;
 [TestFixture]
 public class AdminUnauthorizedTests : PageTest
 {
+    private string _baseUrl = null!;
+
+    [OneTimeSetUp]
+    public void OneTimeSetUp()
+    {
+        _baseUrl = Utilities.GetBaseUrl();
+    }
+
     [Test]
     public async Task AdminIsGuardedAndRedirectsAnonymousUsersToLogin()
     {
-        await Page.GotoAsync("https://localhost:7224/admin");        
+        await Page.GotoAsync($"{_baseUrl}/admin");        
         await Expect(Page).ToHaveURLAsync(new Regex ("https://demo.duendesoftware.com/Account/Login.*"));
     }
 
     [Test]
     public async Task AdminIsNotAvailableForAlice()
     {
-        await Page.GotoAsync("https://localhost:7224/");
+        await Page.GotoAsync(_baseUrl);
         await Page.GetByRole(AriaRole.Link, new() { Name = "Sign in" }).ClickAsync();
         await Page.GetByPlaceholder("Username").FillAsync("alice");
         await Page.GetByPlaceholder("Username").PressAsync("Tab");
@@ -27,8 +35,8 @@ public class AdminUnauthorizedTests : PageTest
         await Expect(Page.GetByRole(AriaRole.Link, new() { Name = "Admin" })).ToBeHiddenAsync();
 
         // hand-coded the next two lines
-        await Page.GotoAsync("https://localhost:7224/admin");
-        await Expect(Page).ToHaveURLAsync("https://localhost:7224/AccessDenied?ReturnUrl=%2Fadmin");
+        await Page.GotoAsync($"{_baseUrl}/admin");
+        await Expect(Page).ToHaveURLAsync($"{_baseUrl}/AccessDenied?ReturnUrl=%2Fadmin");
 
         // record a single line if you want!
         await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Access Denied" })).ToBeVisibleAsync();
