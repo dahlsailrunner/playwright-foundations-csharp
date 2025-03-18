@@ -69,3 +69,41 @@ To target a specific browser, use `chromium`, `firefox`, or `webkit` as an argum
 ```bash
 dotnet test -- Playwright:browser=chromium
 ```
+
+#### Parameters from the Command Line
+
+To specify parameters from the command line, use the following syntax:
+
+```bash
+# cmd
+dotnet test  -- TestRunParameters.Parameter(name=\"myParam\", value=\"value\")
+
+# powershell
+dotnet test --%  -- TestRunParameters.Parameter(name=\"myParam\", value=\"value\") 
+
+# bash
+dotnet test -- TestRunParameters.Parameter\(name=\"myParam\",\ value=\"value\"\) 
+```
+
+Since I'm using PowerShell, this is a sample command to test
+against remote URLs (you would need to provide your own URLs if you
+deploy the app somewhere):
+
+```bash
+dotnet test --% -- TestRunParameters.Parameter(name=\"BaseUrl\", value=\"https://carvedrock-webapp.whiteglacier-d72dac78.eastus2.azurecontainerapps.io\") TestRunParameters.Parameter(name=\"ApiUrl\", value=\"https://carvedrock-api.whiteglacier-d72dac78.eastus2.azurecontainerapps.io\") Playwright.BrowserName=webkit
+```
+
+## Using `.runsettings` Files
+
+A file specifically named `.runsettings` in the solution
+root can be automatically picked up by test runners in IDEs.
+
+From the command line, you can specify the runsettings file as follows:
+
+```bash
+dotnet test -s <filename>
+```
+
+You could put the remote URLs and/or browsers into a
+runsettings file to simplify the command line - see
+`aca-firefox.runsettings` as an example.
