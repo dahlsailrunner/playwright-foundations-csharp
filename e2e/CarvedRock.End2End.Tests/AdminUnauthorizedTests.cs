@@ -16,7 +16,7 @@ public class AdminUnauthorizedTests : PageTest
 
     [Test]
     public async Task AdminIsGuardedAndRedirectsAnonymousUsersToLogin()
-    {
+    {         
         await Page.GotoAsync($"{_baseUrl}/admin");        
         await Expect(Page).ToHaveURLAsync(new Regex ("https://demo.duendesoftware.com/Account/Login.*"));
     }

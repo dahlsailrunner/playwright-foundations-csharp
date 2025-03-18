@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Authentication;
 using CarvedRock.Core;
 using CarvedRock.WebApp;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using System.Globalization;
+
+CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
 
 var builder = WebApplication.CreateBuilder(args);
 
