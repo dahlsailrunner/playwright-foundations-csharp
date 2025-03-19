@@ -15,5 +15,5 @@ jobs:
         run: dotnet build
         working-directory: e2e
       - name: Run your tests
-        run: dotnet test
+        run: dotnet test -s ./aca-firefox.runsettings
         working-directory: e2e
