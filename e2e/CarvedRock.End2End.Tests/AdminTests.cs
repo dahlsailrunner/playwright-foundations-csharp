@@ -14,7 +14,7 @@ public class AdminTests : PageTest
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
-        Randomizer.Seed = new Random(Guid.NewGuid().GetHashCode());
+        Randomizer.Seed = new Random();
         _baseUrl = Utilities.GetBaseUrl();
     }
 
