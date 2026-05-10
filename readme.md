@@ -6,8 +6,8 @@ The root of this repo is the application to test (see [Getting Started](#getting
 Since Playwright tests are end-to-end, they are
 generally not in the same solution as the system under test (SUT).
 
-The Playwright tests for this application are in the [e2e](e2e/readme) folder and the
-readme in that folder has lots of notes about the tests.
+The Playwright tests for this application are in the [e2e](e2e/) folder and the
+[readme](e2e/readme.md) in that folder has lots of notes about the tests.
 
 ## Getting Started
 
